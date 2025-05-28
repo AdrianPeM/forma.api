@@ -51,9 +51,14 @@ Once the container it was correctly created it is just necessary to start it aga
 
     docker container start -d postgresql_server
 
-Run the app
+Run the app using dotnet
 
     dotnet run
+
+Run the app using docker
+    
+    docker compose build
+    docker run -e ASPNETCORE_ENVIRONMENT=Development -e ASPNETCORE_URLS=http://+:80 -e ConnectionStrings__DefaultConnection=Host=localhost;Username=YourDbUser;Password=YourDbPassword;Database=forma_api_db_dev; --name forma.api_container -p 8000:80 -d adrianpem08/forma.api
 
 **For HTTPS testing run the follow the next steps**
 
