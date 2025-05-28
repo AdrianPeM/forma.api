@@ -14,7 +14,8 @@
     # networks:
     #     - shared_network_forma.api
     depends_on:
-      - postgresdb
+      postgresdb:
+        condition: service_started
 
   postgresdb:
     image: postgres:17.5
