@@ -45,7 +45,7 @@ To stop the API services run the following command
 
 PostgreSQL, the first time run the following to create the container
     
-    docker run -e POSTGRES_PASSWORD=admin --name postgresql_server --volume forma.api_volume:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.5
+    docker run -e POSTGRES_PASSWORD=YourDbPassword --name postgresql_server --volume forma.api_volume:/var/lib/postgresql/data -p 5432:5432 -d postgres:17.5
     
 Once the container it was correctly created it is just necessary to start it again
 
@@ -58,7 +58,7 @@ Run the app using dotnet
 Run the app using docker
     
     docker compose build
-    docker run -e ASPNETCORE_ENVIRONMENT=Development -e ASPNETCORE_URLS=http://+:80 -e ConnectionStrings__DefaultConnection=Host=localhost;Username=YourDbUser;Password=YourDbPassword;Database=forma_api_db_dev; --name forma.api_container -p 8000:80 -d adrianpem08/forma.api
+    docker run -e ASPNETCORE_ENVIRONMENT=Development -e ASPNETCORE_URLS=http://+:80 -e ConnectionStrings__DefaultConnection=Host=localhost;Username=YourDbUser;Password=YourDbPassword;Database=forma_api_db_dev; --name forma.api_server -p 8000:80 -d adrianpem08/forma.api
 
 **For HTTPS testing run the follow the next steps**
 
