@@ -1,0 +1,40 @@
+﻿services:
+  forma.api:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: adrianpem08/forma.api
+    container_name: forma.api_container
+    ports:
+      - "8000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgresdb;Username=postgres;Password=admin;Database=forma_api_db_dev;TrustServerCertificate=true;
+    # networks:
+    #     - shared_network_forma.api
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    image: postgres:17.5
+    container_name: postgresdb_container
+    restart: always
+    volumes:
+      - forma.api_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: forma_api_db_dev
+    ports:
+      - "5432:5432"
+# networks:
+#     shared_network_forma.api:
+#         external: true
+networks:
+  default:
+    name: forma.api_network
+
+volumes:
+  forma.api_volume:
+    external: true
