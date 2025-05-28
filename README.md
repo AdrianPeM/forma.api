@@ -221,4 +221,4 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
     - cmd `wsl --list --verbose`
 6. cmd `wsl --update`
 7. cmd `wsl --shutdown`
-8. Restart pc and run docker desktops
+8. Restart pc and run docker desktop
