@@ -1,6 +1,7 @@
 namespace Forma.Api.Models
 {
-    public enum FieldTypeEnum {
+    public enum FieldTypeEnum
+    {
         Text = 1,
         Paragraph = 2,
         Number = 3,
@@ -13,6 +14,6 @@ namespace Forma.Api.Models
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required FieldTypeEnum FieldTypeId {  get; set; } 
+        public required FieldTypeEnum FieldTypeId { get; set; }
     }
 }

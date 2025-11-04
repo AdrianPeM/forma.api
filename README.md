@@ -122,6 +122,7 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
     ```
     add-migration CreateFieldTypeEntity
     ```
+    _The migrations are executed when application starts. Stop application container, build image, and start image again._
 
 4. Create the Controller
     * In Visual Studio
@@ -132,6 +133,21 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
     
     ```
     dotnet aspnet-codegenerator controller -name FieldTypesController -async -api -m FieldType -dc ApplicationDbContext -outDir Controllers
+    ```
+
+#### Docker image version management
+1. Work locally using `latest` tag:
+    ```bash
+    docker build -t adrianpem08/forma.api .
+    ```
+2. When version is ready to be deployed, tag the image with Version (1.x.x):
+    ```bash
+    docker tag adrianpem08/forma.api:latest adrianpem08/forma.api:1.x.x
+    ```
+3. Push both tags (1.x.x and latest):
+    ```bash
+    docker push adrianpem08/forma.api:1.x.x
+    docker push adrianpem08/forma.api:latest
     ```
 
 **Recommendations**
@@ -148,7 +164,7 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
 #### Migrations
 
 **Rollback**
-    
+
 1. List migrations
     
     ```
@@ -201,6 +217,37 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
 
 <br>
 
+## API Response Guidelines
+
+### Common HTTP Status Codes
+
+| Status               | Method(s)                                | Description                               |
+|----------------------|------------------------------------------|-------------------------------------------|
+| **200 OK**           | `GET`, `POST`, `PUT`, `PATCH`            | The request has succeeded and the server returns the requested data or confirms the action. |
+| **201 Created**      | `POST`                                   | The request has been fulfilled and a new resource has been created. |
+| **202 Accepted**     | `POST`, `PUT`, `PATCH`                   | The request has been accepted for processing, but the processing is not yet complete. |
+| **204 No Content**   | `DELETE`, sometimes `PUT`                | The request was successful, but no content is returned (e.g., resource deletion). |
+| **400 Bad Request**  | Any                                      | The server could not understand the request due to invalid syntax or missing parameters. |
+| **401 Unauthorized** | Any                                      | Authentication is required or has failed (e.g., invalid or expired credentials). |
+| **403 Forbidden**    | Any                                      | The server understood the request, but the client does not have permission to access the resource. |
+| **404 Not Found**    | Any                                      | The server could not find the requested resource (e.g., incorrect URL). |
+| **409 Conflict**     | `POST`, `PUT`                            | The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate resource). |
+| **422 Unprocessable Entity** | `POST`, `PUT`                    | The server understands the request, but it cannot process the contained instructions (e.g., semantic errors). |
+
+### Typical Responses by Action
+
+| Action               | Status Code       | When to Use                               | Notes                         | Method(s)            |
+|----------------------|-------------------|--------------------------------------------|-------------------------------|----------------------|
+| Fetch all or one     | `200 OK`          | Data retrieval was successful              | Return the data requested.    | `Ok(result)`         |
+| Create               | `201 Created`     | A new resource has been successfully created | Confirm the creation with the newly created resource. | `CreatedAtAction()` |
+| Update               | `200 OK` / `204`  | The resource has been updated               | If the resource exists and is updated, return `200 OK`. If no content is returned after update, use `204 No Content`. | `Ok()` or `NoContent()` |
+| Delete               | `204 No Content`  | The resource has been successfully deleted | Return an empty response body to indicate deletion. | `NoContent()`       |
+| Validation failure   | `400` or `422`    | The input is invalid or failed validation | Return detailed error information for the user to fix their input. | `BadRequest()`, `UnprocessableEntity()` |
+| Unauthorized         | `401 Unauthorized`| No authentication or the session has expired | Provide an error indicating the need for authentication. | `Unauthorized()`   |
+| Forbidden            | `403 Forbidden`   | The user does not have permission to access the resource | Return an error indicating insufficient rights. | `Forbid()`          |
+| Not found            | `404 Not Found`   | The resource could not be located on the server | The resource doesn't exist or has been moved/deleted. | `NotFound()`        |
+| Conflict             | `409 Conflict`    | The action could not be completed due to a conflict (e.g., resource already exists) | Handle cases like duplicate records or state conflicts. | `Conflict()`        |
+
 ## Troubleshooting
 
 #### First time load
@@ -209,6 +256,7 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
 
 1. Retry docker compose up or open Docker desktop, locate the forma.api_container and re-run container
 
+    _Applied solution: add in docker-compose file condition: service_started_
 
 #### Docker engine stopped
 
