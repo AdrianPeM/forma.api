@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Forma.Api.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Forma.Api.Models
 {
+    [Index(nameof(Email), IsUnique = true)]
     public class User : ITimestampedEntity
     {
         [Key]
