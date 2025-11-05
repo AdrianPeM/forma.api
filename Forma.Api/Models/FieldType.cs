@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Forma.Api.Models
 {
     public enum FieldTypeEnum
@@ -10,6 +12,8 @@ namespace Forma.Api.Models
         Dropdown = 6,
         Date = 7
     }
+    
+    [Index(nameof(Name), IsUnique = true)]
     public class FieldType
     {
         public int Id { get; set; }
