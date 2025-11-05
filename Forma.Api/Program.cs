@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Forma.Api.Data;
 using Microsoft.AspNetCore.Mvc;
-using Forma.Api.Extensions;
-using Forma.Api.Responses;
-using System.Diagnostics;
+using Forma.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,18 +11,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.InvalidModelStateResponseFactory = context =>
-    {
-        var errors = context.ModelState.ToApiErrors();        
-        var errorResponse = new ApiErrorResponse { Errors = errors };
-
-        return new BadRequestObjectResult(errorResponse);
-    };
+    options.SuppressModelStateInvalidFilter = true;
 });
 
 // Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    // Add the validation filter globally to all controllers
+    options.Filters.Add<ValidateModelStateAttribute>();
+});
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

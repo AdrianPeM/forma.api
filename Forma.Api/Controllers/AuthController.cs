@@ -1,10 +1,9 @@
-using System.Diagnostics;
+using Forma.Api.Constants;
 using Forma.Api.Models;
 using Forma.Api.Requests;
 using Forma.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Forma.Api.Controllers
 {
@@ -23,7 +22,7 @@ namespace Forma.Api.Controllers
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
             if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email))
-                return ErrorResponse("email", "email_already_exists", Conflict);
+                return ErrorResponse("email", ErrorCodes.AlreadyExists, Conflict);
 
             var hashedPassword = PasswordHasher.Hash(request.Password);
 
@@ -49,7 +48,7 @@ namespace Forma.Api.Controllers
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null || !PasswordHasher.Verify(request.Password, user.Password))
-                return ErrorResponse("email", "invalid_credentials");
+                return ErrorResponse("credentials", ErrorCodes.InvalidCredentials);
 
             // Replace with JWT token later
             return Ok(new { user.Id, user.Email, user.FirstName });
