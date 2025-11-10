@@ -1,6 +1,7 @@
 using Forma.Api.Constants;
 using Forma.Api.Models;
 using Forma.Api.Requests;
+using Forma.Api.Responses;
 using Forma.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ namespace Forma.Api.Controllers
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Signup), new { user.Id }, new { user.Id });
+            return CreatedAtAction(nameof(Signup), new { user.Id }, new SignupResponse { Id = user.Id });
         }
 
         [HttpPost("login")]
@@ -51,7 +52,7 @@ namespace Forma.Api.Controllers
                 return ErrorResponse("credentials", ErrorCodes.InvalidCredentials);
 
             // Replace with JWT token later
-            return Ok(new { user.Id, user.Email, user.FirstName });
+            return Ok(new LoginResponse { Id = user.Id, Email = user.Email, FirstName = user.FirstName });
         }
     }
 }
