@@ -11,6 +11,9 @@
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Host=postgresdb;Username=postgres;Password=admin;Database=forma_api_db_dev;TrustServerCertificate=true;
+      - JwtConfig__Issuer=https://localhost:7059
+      - JwtConfig__Audience=https://localhost:7059
+      - JwtConfig__Key=92704a2aaa650fe6687c230a2f47eaf03f807ce7479f334dfaa72c92cfe146cf98c686824219247582c11b3f5bdd69ae7924625c47a7493989745b4c2ecffc34
     # networks:
     #     - shared_network_forma.api
     depends_on:

@@ -62,7 +62,7 @@ Run the app using dotnet
 Run the app using docker
     
     docker build -t adrianpem08/forma.api .
-    docker run --name forma.api_server -e=ConnectionStrings__DefaultConnection=Host=postgresql_server;Username=YourDbUser;Password=YourDbPwd;Database=forma_api_db_dev; -e=ASPNETCORE_ENVIRONMENT=Development -e=ASPNETCORE_URLS=http://+:80 -p 8000:80 --network containers_shared_network -d adrianpem08/forma.api
+    docker run --name forma.api_server -e=ASPNETCORE_ENVIRONMENT=Development -e=ASPNETCORE_URLS=http://+:80 -e=ConnectionStrings__DefaultConnection=Host=postgresql_server;Username=YourDbUser;Password=YourDbPwd;Database=forma_api_db_dev; -e=JwtConfig__Issuer=https://localhost:8000 -e=JwtConfig__Audience=https://localhost:8000 -e=JwtConfig__Key=development-secret-key -p 8000:80 --network containers_shared_network -d adrianpem08/forma.api
 
 **For HTTPS testing run the follow the next steps**
 
@@ -135,6 +135,11 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
     dotnet aspnet-codegenerator controller -name FieldTypesController -async -api -m FieldType -dc ApplicationDbContext -outDir Controllers
     ```
 
+    1. Before creating a CRUD operation, endpoint or request, define its Request/Response models
+        1. If it is a new feature then define a new folder structure as follows
+            Controllers > NewFeature > FeatureController.cs, Feature.Requests.cs, Feature.Responses.cs
+    2. Create the necessary CRUD operations,endpoints and requests, and use the previously request/response models defined for the method's request and response.
+
 #### Docker image version management
 1. Work locally using `latest` tag:
     ```bash
@@ -160,6 +165,24 @@ Open <http://localhost:5141/swagger> in your browser (port can be different, che
     * ***AddModelNameSeedData***
 * Review migration file before appliying them
 * Create seeds when necessary, `Seed` must be created before create the `Migration`
+* Separate controllers by Feature folders
+* Requests and Responses files must be defined for each controller
+```
+Controllers/
+├── Users/
+│   ├── UsersController.cs         ← Basic CRUD only
+│   ├── Users.Requests.cs
+│   └── Users.Responses.cs
+├── UserProfile/
+│   ├── UserProfileController.cs   ← Profile-specific
+│   ├── UserProfile.Requests.cs
+│   └── UserProfile.Responses.cs
+└── Auth/                           ← Authentication separate
+    ├── AuthController.cs
+    ├── Auth.Requests.cs
+    └── Auth.Responses.cs
+```
+* Controllers should not have more than 6 methods; if more are needed then split it
 
 #### Migrations
 
