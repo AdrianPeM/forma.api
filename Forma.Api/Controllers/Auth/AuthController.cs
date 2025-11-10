@@ -2,7 +2,9 @@ using Forma.Api.Constants;
 using Forma.Api.Models;
 using Forma.Api.Requests;
 using Forma.Api.Responses;
+using Forma.Api.Services;
 using Forma.Api.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +15,15 @@ namespace Forma.Api.Controllers
     public class AuthController : BaseApiController
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly JwtService _jwtService;
 
-        public AuthController(ApplicationDbContext dbContext)
+        public AuthController(ApplicationDbContext dbContext, JwtService jwtService)
         {
             _dbContext = dbContext;
+            _jwtService = jwtService;
         }
 
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
@@ -42,17 +47,16 @@ namespace Forma.Api.Controllers
             return CreatedAtAction(nameof(Signup), new { user.Id }, new SignupResponse { Id = user.Id });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
+            var result = await _jwtService.Authenticate(request);
 
-            if (user == null || !PasswordHasher.Verify(request.Password, user.Password))
-                return ErrorResponse("credentials", ErrorCodes.InvalidCredentials);
+            if (result is null)
+                return Unauthorized();
 
-            // Replace with JWT token later
-            return Ok(new LoginResponse { Id = user.Id, Email = user.Email, FirstName = user.FirstName });
+            return Ok(result);
         }
     }
 }
